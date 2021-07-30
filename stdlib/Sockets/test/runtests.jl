@@ -204,9 +204,16 @@ end
     # installing `libnss-resolve`, which installs the `systemd-resolve`
     # backend for NSS, which should fix it.
     if Sys.islinux() && getnameinfo(ip"0.1.1.1") != "0.1.1.1"
-        @error("getnameinfo(0.1.1.1) failed!  If your DNS setup seems to be working, Try installing libnss-resolve!")
+        
     end
-    @test getnameinfo(ip"0.1.1.1") == "0.1.1.1"
+    try
+        @test getnameinfo(ip"0.1.1.1") == "0.1.1.1"
+    catch
+        if Sys.islinux()
+            @error("getnameinfo(0.1.1.1) failed!  If your DNS setup seems to be working, Try installing libnss-resolve!")
+        end
+        @test false
+    end
     @test getnameinfo(ip"::ffff:0.1.1.1") == "::ffff:0.1.1.1"
     @test getnameinfo(ip"::ffff:192.0.2.1") == "::ffff:192.0.2.1"
     @test getnameinfo(ip"2001:db8::1") == "2001:db8::1"
